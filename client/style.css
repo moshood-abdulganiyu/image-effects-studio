@@ -1,0 +1,99 @@
+/* Structural layout only. Visual design pass happens in step 8. */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
+
+.site-header {
+  padding: 1rem 1.5rem;
+}
+
+.layout {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0 1.5rem 1.5rem;
+  align-items: flex-start;
+}
+
+/* Left panel */
+.upload-panel {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.drop-zone {
+  border: 2px dashed #999;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.drop-zone.drop-zone--active {
+  border-color: #333;
+}
+
+.original-preview img,
+.effect-preview img {
+  max-width: 100%;
+  display: block;
+}
+
+.placeholder-text {
+  color: #777;
+  font-size: 0.9rem;
+}
+
+/* Right panel: 3-top / 2-bottom grid */
+.effects-panel {
+  flex: 1;
+}
+
+.effects-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.effect-box {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.effect-preview {
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.effect-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.effect-button:not(:disabled) {
+  cursor: pointer;
+}
+
+/* Responsive: stack to a single column below 720px */
+@media (max-width: 720px) {
+  .layout {
+    flex-direction: column;
+  }
+  .effects-grid {
+    grid-template-columns: 1fr;
+  }
+}
