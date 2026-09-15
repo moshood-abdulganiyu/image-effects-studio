@@ -79,6 +79,9 @@ body {
   border-radius: 4px;
 }
 
+/* Covers both the pre-upload disabled state and the in-flight state while
+   a box's own /predict request is running. Real loading indicator
+   (spinner etc.) is a step 8 styling task. */
 .effect-button:disabled {
   opacity: 0.5;
   cursor: not-allowed;

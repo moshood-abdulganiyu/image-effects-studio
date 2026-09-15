@@ -1,5 +1,9 @@
-// Step 6 scope: get an image into the page and enable the 5 effect buttons.
-// Step 7 will wire each button to POST /predict.
+// Step 6: get an image into the page and enable the 5 effect buttons.
+// Step 7: wire each button to its own POST /predict call.
+
+// Hardcoded for local dev. Step 9 makes this env-configurable so the same
+// client can point at the deployed Render URL without a code change.
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 const dropZone = document.getElementById("drop-zone");
 const fileInput = document.getElementById("file-input");
@@ -53,4 +57,72 @@ dropZone.addEventListener("drop", (event) => {
   dropZone.classList.remove("drop-zone--active");
   const file = event.dataTransfer.files[0];
   handleFile(file);
+});
+
+// --- Step 7: per-box predict wiring ---
+// Each box is independent: its own button, its own fetch, its own result
+// and download link. Clicking one never touches another box's state, and
+// a slow effect (oil painting) never blocks the others from finishing.
+
+async function runEffect(box) {
+  const effect = box.dataset.effect;
+  const button = box.querySelector(".effect-button");
+  const resultImage = box.querySelector(".effect-result");
+  const placeholder = box.querySelector(".placeholder-text");
+  const downloadLink = box.querySelector(".download-link");
+
+  if (!window.currentImageFile) {
+    return;
+  }
+
+  const originalLabel = button.textContent;
+  const originalPlaceholderText = placeholder.dataset.defaultText || placeholder.textContent;
+  placeholder.dataset.defaultText = originalPlaceholderText;
+
+  button.disabled = true;
+  button.textContent = "Applying...";
+  downloadLink.hidden = true;
+
+  const formData = new FormData();
+  formData.append("image", window.currentImageFile);
+  formData.append("effect", effect);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/predict`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => null);
+      const detail = errorBody && errorBody.detail ? errorBody.detail : response.statusText;
+      throw new Error(detail);
+    }
+
+    const data = await response.json();
+    const dataUrl = `data:image/${data.format};base64,${data.image_base64}`;
+
+    resultImage.src = dataUrl;
+    resultImage.hidden = false;
+    placeholder.textContent = originalPlaceholderText;
+    placeholder.hidden = true;
+
+    downloadLink.href = dataUrl;
+    downloadLink.download = `${effect}-result.${data.format}`;
+    downloadLink.hidden = false;
+  } catch (error) {
+    // Box-scoped failure: this box shows the error, the other 4 boxes
+    // are untouched and remain clickable.
+    placeholder.textContent = `Failed: ${error.message}`;
+    placeholder.hidden = false;
+    resultImage.hidden = true;
+  } finally {
+    button.disabled = false;
+    button.textContent = originalLabel;
+  }
+}
+
+document.querySelectorAll(".effect-box").forEach((box) => {
+  const button = box.querySelector(".effect-button");
+  button.addEventListener("click", () => runEffect(box));
 });
