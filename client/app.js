@@ -1,6 +1,4 @@
 
-const API_BASE_URL = "http://localhost:8000";
-
 const dropZone = document.getElementById("drop-zone");
 const fileInput = document.getElementById("file-input");
 const originalImage = document.getElementById("original-image");
