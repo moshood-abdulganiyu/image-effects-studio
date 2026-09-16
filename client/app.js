@@ -1,9 +1,5 @@
-// Step 6: get an image into the page and enable the 5 effect buttons.
-// Step 7: wire each button to its own POST /predict call.
 
-// Hardcoded for local dev. Step 9 makes this env-configurable so the same
-// client can point at the deployed Render URL without a code change.
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = "http://localhost:8000";
 
 const dropZone = document.getElementById("drop-zone");
 const fileInput = document.getElementById("file-input");
