@@ -80,7 +80,7 @@ async function runEffect(box) {
   placeholder.dataset.defaultText = originalPlaceholderText;
 
   button.disabled = true;
-  button.textContent = "Applying...";
+  button.textContent = "Developing...";
   downloadLink.hidden = true;
 
   const formData = new FormData();
@@ -102,8 +102,13 @@ async function runEffect(box) {
     const data = await response.json();
     const dataUrl = `data:image/${data.format};base64,${data.image_base64}`;
 
+    // Restart the develop-in animation even on a re-click of the same
+    // box: drop the class, force a reflow, then re-add it.
+    resultImage.classList.remove("develop-in");
+    void resultImage.offsetWidth;
     resultImage.src = dataUrl;
     resultImage.hidden = false;
+    resultImage.classList.add("develop-in");
     placeholder.textContent = originalPlaceholderText;
     placeholder.hidden = true;
 

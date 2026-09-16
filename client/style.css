@@ -1,102 +1,325 @@
-/* Structural layout only. Visual design pass happens in step 8. */
+/* ------------------------------------------------------------------
+   Image Effects Studio — a light-table for developing prints.
+   Dark ink background, warm paper cards holding the images, one
+   amber safelight accent reserved for actions. See README design
+   notes for the reasoning; this file is the implementation.
+   ------------------------------------------------------------------ */
 
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-}
-
-.site-header {
-  padding: 1rem 1.5rem;
-}
-
-.layout {
-  display: flex;
-  gap: 1.5rem;
-  padding: 0 1.5rem 1.5rem;
-  align-items: flex-start;
-}
-
-/* Left panel */
-.upload-panel {
-  flex: 0 0 280px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.drop-zone {
-  border: 2px dashed #999;
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: center;
-}
-
-.drop-zone.drop-zone--active {
-  border-color: #333;
-}
-
-.original-preview img,
-.effect-preview img {
-  max-width: 100%;
-  display: block;
-}
-
-.placeholder-text {
-  color: #777;
-  font-size: 0.9rem;
-}
-
-/* Right panel: 3-top / 2-bottom grid */
-.effects-panel {
-  flex: 1;
-}
-
-.effects-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1rem;
-}
-
-.effect-box {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.effect-preview {
-  min-height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f5f5f5;
-  border-radius: 4px;
-}
-
-/* Covers both the pre-upload disabled state and the in-flight state while
-   a box's own /predict request is running. Real loading indicator
-   (spinner etc.) is a step 8 styling task. */
-.effect-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.effect-button:not(:disabled) {
-  cursor: pointer;
-}
-
-/* Responsive: stack to a single column below 720px */
-@media (max-width: 720px) {
+   :root {
+    --ink: #171a18;          /* darkroom background, warm-black with a green undertone */
+    --ink-line: #2b2f2c;     /* hairline borders/dividers on the dark ground */
+    --ink-soft: #a6a89d;     /* muted secondary text on dark ground */
+    --paper: #f1ead9;        /* matte board the prints sit on */
+    --paper-dim: #e2d8c2;    /* empty preview wells, unexposed paper */
+    --charcoal: #24221c;     /* body text on paper */
+    --safelight: #cf8a2e;    /* the one warm accent, reserved for actions */
+    --safelight-dim: #9c6a22;/* pressed/hover state */
+    --danger: #a6432f;
+  
+    --font-display: "Fraunces", Georgia, serif;
+    --font-ui: "IBM Plex Sans", system-ui, sans-serif;
+  
+    --radius: 3px;
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-ui);
+  }
+  
+  /* ---------- Header ---------- */
+  
+  .site-header {
+    padding: 2.5rem 2rem 1.5rem;
+    max-width: 40rem;
+  }
+  
+  .site-header h1 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+    margin: 0 0 0.4rem;
+    color: var(--paper);
+    letter-spacing: -0.01em;
+  }
+  
+  .subtitle {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  /* ---------- Layout ---------- */
+  
   .layout {
+    display: flex;
+    gap: 2rem;
+    padding: 0 2rem 3rem;
+    align-items: flex-start;
+  }
+  
+  .upload-panel {
+    flex: 0 0 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: sticky;
+    top: 2rem;
+  }
+  
+  .effects-panel {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  /* ---------- Upload / drop zone ---------- */
+  
+  .drop-zone {
+    border: 1.5px dashed var(--ink-line);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.25rem;
+    text-align: center;
+    transition: border-color 150ms ease;
+  }
+  
+  .drop-zone.drop-zone--active {
+    border-color: var(--safelight);
+  }
+  
+  .drop-zone__prompt {
+    margin: 0 0 0.75rem;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+  
+  .drop-zone__hint {
+    margin: 0.75rem 0 0;
+    color: var(--ink-soft);
+    font-size: 0.8rem;
+  }
+  
+  .file-picker-button {
+    display: inline-block;
+    background: var(--safelight);
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 150ms ease;
+  }
+  
+  .file-picker-button:hover {
+    background: #dd9b3f;
+  }
+  
+  /* ---------- Print captions (labels above each frame) ---------- */
+  
+  .print-caption {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--paper);
+    margin: 0 0 0.5rem;
+  }
+  
+  /* ---------- Print frames (the paper cards holding an image) ---------- */
+  
+  .print-frame {
+    position: relative;
+    background: var(--paper-dim);
+    border-radius: var(--radius);
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0.5rem;
+  }
+  
+  .print-frame img {
+    max-width: 100%;
+    max-height: 220px;
+    display: block;
+    border-radius: 1px;
+  }
+  
+  .placeholder-text {
+    color: #8a806a;
+    font-size: 0.85rem;
+    margin: 0;
+    padding: 0 1rem;
+    text-align: center;
+  }
+  
+  /* The original print is the one bold moment: a paper mount with two
+     photo corners, like a print mounted in an album. Effect prints stay
+     quieter so this one detail reads as deliberate rather than decorative. */
+  .print-frame--original {
+    background: var(--paper);
+    padding: 0.75rem;
+    min-height: 180px;
+  }
+  
+  .corner-mount {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  .corner-mount::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--safelight);
+    clip-path: polygon(0 0, 100% 0, 0 100%);
+  }
+  
+  .corner-mount--tl {
+    top: 0;
+    left: 0;
+  }
+  
+  .corner-mount--br {
+    bottom: 0;
+    right: 0;
+    transform: rotate(180deg);
+  }
+  
+  /* ---------- Effect grid: 3 top / 2 bottom via natural grid flow ---------- */
+  
+  .effects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem 1.25rem;
+  }
+  
+  .effect-box {
+    display: flex;
     flex-direction: column;
   }
-  .effects-grid {
-    grid-template-columns: 1fr;
+  
+  .effect-preview {
+    min-height: 150px;
   }
-}
+  
+  /* Result image "develops in" once a request resolves, rather than
+     simply popping into place. One deliberate motion, tied to the
+     user's own click, not a hover effect scattered across every card. */
+  @keyframes develop {
+    from {
+      opacity: 0;
+      filter: brightness(0.3) contrast(0.8);
+    }
+    to {
+      opacity: 1;
+      filter: brightness(1) contrast(1);
+    }
+  }
+  
+  .effect-result.develop-in {
+    animation: develop 550ms ease-out;
+  }
+  
+  /* ---------- Buttons and download links ---------- */
+  
+  .effect-button {
+    margin-top: 0.75rem;
+    background: transparent;
+    border: 1px solid var(--ink-line);
+    color: var(--paper);
+    font-family: var(--font-ui);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    transition: background 150ms ease, border-color 150ms ease, color 150ms ease;
+  }
+  
+  .effect-button:not(:disabled) {
+    border-color: var(--safelight);
+    color: var(--safelight);
+    cursor: pointer;
+  }
+  
+  .effect-button:not(:disabled):hover {
+    background: var(--safelight);
+    color: var(--ink);
+  }
+  
+  .effect-button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  
+  .download-link {
+    margin-top: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    align-self: flex-start;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  
+  .download-link:hover {
+    color: var(--safelight);
+    border-color: var(--safelight);
+  }
+  
+  /* ---------- Accessibility & motion ---------- */
+  
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--safelight);
+    outline-offset: 2px;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .effect-result.develop-in {
+      animation: none;
+    }
+    .drop-zone,
+    .file-picker-button,
+    .effect-button,
+    .download-link {
+      transition: none;
+    }
+  }
+  
+  /* ---------- Responsive ---------- */
+  
+  @media (max-width: 760px) {
+    .layout {
+      flex-direction: column;
+      padding: 0 1.25rem 2rem;
+    }
+    .upload-panel {
+      flex: none;
+      width: 100%;
+      position: static;
+    }
+    .effects-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .effects-grid {
+      grid-template-columns: 1fr;
+    }
+    .site-header {
+      padding: 1.75rem 1.25rem 1rem;
+    }
+  }

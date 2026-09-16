@@ -4,28 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Image Effects Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="site-header">
-    <h1>Image Effects Studio</h1>
-    <p class="subtitle">Upload an image, then apply any effect on demand.</p>
+    <h1>Image effects studio</h1>
+    <p class="subtitle">Load one image, develop five prints from it.</p>
   </header>
 
   <main class="layout">
     <!-- Left panel: upload + original image -->
     <section class="upload-panel" aria-label="Upload">
       <div id="drop-zone" class="drop-zone">
-        <p class="drop-zone__prompt">Drag and drop an image here, or</p>
+        <p class="drop-zone__prompt">Drag an image here, or</p>
         <label for="file-input" class="file-picker-button">Choose a file</label>
         <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp" hidden />
         <p class="drop-zone__hint">JPEG, PNG, or WebP</p>
       </div>
 
       <div class="original-preview">
-        <h2>Original</h2>
-        <img id="original-image" alt="Uploaded original" hidden />
-        <p id="original-placeholder" class="placeholder-text">No image uploaded yet</p>
+        <p class="print-caption">Original</p>
+        <div class="print-frame print-frame--original">
+          <span class="corner-mount corner-mount--tl" aria-hidden="true"></span>
+          <span class="corner-mount corner-mount--br" aria-hidden="true"></span>
+          <img id="original-image" alt="Uploaded original" hidden />
+          <p id="original-placeholder" class="placeholder-text">No image uploaded yet</p>
+        </div>
       </div>
     </section>
 
@@ -33,53 +40,53 @@
     <section class="effects-panel" aria-label="Effects">
       <div class="effects-grid">
         <article class="effect-box" data-effect="cartoonify">
-          <h3>Cartoonify</h3>
-          <div class="effect-preview">
+          <p class="print-caption">Cartoonify</p>
+          <div class="print-frame effect-preview">
             <img class="effect-result" alt="Cartoonify result" hidden />
-            <p class="placeholder-text">Result will appear here</p>
+            <p class="placeholder-text">No print yet</p>
           </div>
-          <button class="effect-button" type="button" disabled>Apply cartoonify</button>
-          <a class="download-link" href="#" download hidden>Download</a>
+          <button class="effect-button" type="button" disabled>Develop cartoonify</button>
+          <a class="download-link" href="#" download hidden>Download print</a>
         </article>
 
         <article class="effect-box" data-effect="grayscale">
-          <h3>Grayscale</h3>
-          <div class="effect-preview">
+          <p class="print-caption">Grayscale</p>
+          <div class="print-frame effect-preview">
             <img class="effect-result" alt="Grayscale result" hidden />
-            <p class="placeholder-text">Result will appear here</p>
+            <p class="placeholder-text">No print yet</p>
           </div>
-          <button class="effect-button" type="button" disabled>Apply grayscale</button>
-          <a class="download-link" href="#" download hidden>Download</a>
+          <button class="effect-button" type="button" disabled>Develop grayscale</button>
+          <a class="download-link" href="#" download hidden>Download print</a>
         </article>
 
         <article class="effect-box" data-effect="pencil_sketch">
-          <h3>Pencil sketch</h3>
-          <div class="effect-preview">
+          <p class="print-caption">Pencil sketch</p>
+          <div class="print-frame effect-preview">
             <img class="effect-result" alt="Pencil sketch result" hidden />
-            <p class="placeholder-text">Result will appear here</p>
+            <p class="placeholder-text">No print yet</p>
           </div>
-          <button class="effect-button" type="button" disabled>Apply pencil sketch</button>
-          <a class="download-link" href="#" download hidden>Download</a>
+          <button class="effect-button" type="button" disabled>Develop pencil sketch</button>
+          <a class="download-link" href="#" download hidden>Download print</a>
         </article>
 
         <article class="effect-box" data-effect="oil_painting">
-          <h3>Oil painting</h3>
-          <div class="effect-preview">
+          <p class="print-caption">Oil painting</p>
+          <div class="print-frame effect-preview">
             <img class="effect-result" alt="Oil painting result" hidden />
-            <p class="placeholder-text">Result will appear here</p>
+            <p class="placeholder-text">No print yet</p>
           </div>
-          <button class="effect-button" type="button" disabled>Apply oil painting</button>
-          <a class="download-link" href="#" download hidden>Download</a>
+          <button class="effect-button" type="button" disabled>Develop oil painting</button>
+          <a class="download-link" href="#" download hidden>Download print</a>
         </article>
 
         <article class="effect-box" data-effect="pixel_art">
-          <h3>Pixel art</h3>
-          <div class="effect-preview">
+          <p class="print-caption">Pixel art</p>
+          <div class="print-frame effect-preview">
             <img class="effect-result" alt="Pixel art result" hidden />
-            <p class="placeholder-text">Result will appear here</p>
+            <p class="placeholder-text">No print yet</p>
           </div>
-          <button class="effect-button" type="button" disabled>Apply pixel art</button>
-          <a class="download-link" href="#" download hidden>Download</a>
+          <button class="effect-button" type="button" disabled>Develop pixel art</button>
+          <a class="download-link" href="#" download hidden>Download print</a>
         </article>
       </div>
     </section>
