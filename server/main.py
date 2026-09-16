@@ -4,7 +4,9 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 
 # allow "from src.effects import ..." when running from repo root or from server/
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -27,6 +29,16 @@ app = FastAPI(
     title="Image Effects Studio API",
     description="Upload an image, apply one of five OpenCV effects on demand.",
     version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://moshood-abdulganiyu-image-effects-studio-frontend.static.hf.space",
+        "http://localhost:8080",  # adjust to whatever port you use for local frontend testing
+    ],
+    allow_methods=["POST"],
+    allow_headers=["*"],
 )
 
 
